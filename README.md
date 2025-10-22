@@ -77,6 +77,52 @@ python send_email.py \
   --attach ./report.pdf --attach ./grafico.png
 ```
 
+**Allegati multipli** (ripeti `--attach`):
+
+```bash
+python send_email.py \
+  --to dest@example.com \
+  --subject "Prova con più allegati" \
+  --text "Ciao" \
+  --attach ./file1.pdf \
+  --attach ./immagini/grafico.png \
+  --attach ./dati/export.csv
+```
+
+> Su **PowerShell/Windows** niente wildcard (`*.pdf`) a meno di espansioni manuali; su **bash/zsh** le glob vengono espanse dallo shell.
+
+**BCC e BCC multipli** (copie conoscenza nascoste):
+
+```bash
+python send_email.py \
+  --to primo@esempio.com --to secondo@esempio.com \
+  --cc visibile@esempio.com \
+  --bcc nascosto1@esempio.com --bcc nascosto2@esempio.com \
+  --subject "Prova BCC" \
+  --text "Ciao, prova con BCC."
+```
+
+> I destinatari in **BCC** ricevono l'email ma **non compaiono** nelle intestazioni visibili.
+
+**Solo BCC** (nessun destinatario visibile):
+
+```bash
+python send_email.py \
+  --to "undisclosed-recipients:;" \
+  --bcc nascosto1@esempio.com --bcc nascosto2@esempio.com \
+  --subject "Solo BCC" \
+  --text "Lista solo BCC."
+```
+
+**Più destinatari (To multipli)**:
+
+```bash
+python send_email.py \
+  --to a@ex.com --to b@ex.com --to c@ex.com \
+  --subject "Invio a più destinatari" \
+  --text "Stesso messaggio a più persone."
+```
+
 Forza trasporto (es. SSL 465):
 
 ```bash
@@ -124,10 +170,13 @@ Usa `python send_email.py` come comando e poi gli argomenti:
 ```bash
 docker compose run --rm smtp \
   python send_email.py \
-  --to lantoniotrento@gmail.com \
-  --subject "Prova invio CSV" \
-  --text "Ciao, ti inoltro il file." \
-  --attach /app/neta_rate_all_forn_post2020_v2_1761124690147.csv \
+  --to a@ex.com --to b@ex.com \
+  --cc visibile@esempio.com \
+  --bcc nascosto1@esempio.com --bcc nascosto2@esempio.com \
+  --subject "Prova Docker + BCC" \
+  --text "Ciao" \
+  --attach /app/file1.pdf \
+  --attach /app/immagini/grafico.png \
   --host smtp.mail.yahoo.com \
   --port 465 \
   --encryption ssl
@@ -154,20 +203,9 @@ docker compose run --rm smtp \
   ```bash
   docker compose run --rm smtp -- \
     --to dest@example.com \
+    --bcc nascosto@esempio.com \
     --subject "Prova" \
     --text "Ciao"
-  ```
-* One‑liner senza Compose:
-
-  ```bash
-  docker run --rm -it \
-    -v "$PWD":/app \
-    --env-file .env \
-    python:3.12-slim \
-    sh -c 'pip install --no-cache-dir -r requirements.txt && python send_email.py \
-      --to dest@example.com \
-      --subject "Prova" \
-      --text "Ciao"'
   ```
 
 ---
